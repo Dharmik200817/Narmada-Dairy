@@ -21,6 +21,34 @@
 
   <body>
     <div id="root"></div>
+    <!-- Runtime error reporter: displays uncaught errors so blank page shows message -->
+    <script>
+      (function(){
+        function showError(message){
+          try{
+            var root=document.getElementById('root');
+            if(root){
+              root.innerHTML = '<div style="padding:20px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;line-height:1.4;color:#c92a2a;background:#fff6f6;border:1px solid #ffd2d2;border-radius:6px;"><h2 style="margin:0 0 8px">Runtime error</h2><pre style="white-space:pre-wrap">'+message.replace(/</g,'&lt;')+'</pre></div>';
+            }
+          }catch(e){ /* ignore */ }
+        }
+        window.addEventListener('error', function(e){
+          showError((e && e.message) || String(e));
+          console.error('Captured error:', e);
+        });
+        window.addEventListener('unhandledrejection', function(e){
+          showError((e && e.reason && e.reason.message) || String(e));
+          console.error('Unhandled rejection:', e);
+        });
+        // small timeout to show a hint if nothing mounts
+        setTimeout(function(){
+          var root=document.getElementById('root');
+          if(root && root.innerHTML.trim()===''){
+            root.innerHTML = '<div style="padding:20px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;line-height:1.4;color:#444;background:#f8f9fa;border:1px solid #e9ecef;border-radius:6px;"><h2 style="margin:0 0 8px">App did not mount</h2><p style="margin:0">If the app remains blank, open DevTools Console to see errors. This message is injected to help debugging.</p></div>';
+          }
+        }, 800);
+      })();
+    </script>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </body>
